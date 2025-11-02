@@ -1,35 +1,107 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import TodoInput from "./components/TodoInput";
+import TodoList from "./components/TodoList";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+ 
+  const saveCompletedData = "todoCompletedData";
+  const saveData = "todoData";
+
+  const [tickItem, setTickItem] = useState(() => {
+    try {
+      const showData = localStorage.getItem(saveCompletedData);
+      if (!showData || showData === "undefined") return [];
+      return JSON.parse(showData);
+    } catch {
+      return [];
+    }
+  });
+
+  const [items, setItems] = useState(() => {
+    try {
+      const showData = localStorage.getItem(saveData);
+      if (!showData || showData === "undefined") return [];
+      return JSON.parse(showData);
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(saveCompletedData, JSON.stringify(tickItem));
+  }, [tickItem]);
+
+  useEffect(() => {
+    localStorage.setItem(saveData, JSON.stringify(items));
+  }, [items]);
+
+  const [inputValue, setInputValue] = useState("");
+  const [editIndex, setEditIndex] = useState(null);
+  const [editValue, setEditValue] = useState("");
+
+  const handleChange = (e) => setInputValue(e.target.value);
+
+  const buttonClick = () => {
+    if (inputValue.trim() !== "") {
+      setItems([...items, inputValue]);
+      setInputValue("");
+    }
+  };
+
+  const Tick = (item, index) => {
+    setTickItem([...tickItem, item]);
+    setItems(items.filter((_, i) => i !== index));
+  };
+
+  const startEdit = (item, index) => {
+    setEditIndex(index);
+    setEditValue(item);
+  };
+
+  const handleEditChange = (e) => setEditValue(e.target.value);
+
+  const updateItem = (index) => {
+    const updated = [...items];
+    updated[index] = editValue;
+    setItems(updated);
+    setEditIndex(null);
+    setEditValue("");
+  };
+
+  const del = (item) => {
+    setItems(items.filter((element) => element !== item));
+  };
+
+  const undo = (item, index) => {
+    setItems([...items, item]);
+    setTickItem(tickItem.filter((_, i) => i !== index));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      <div className="input-section">
+        <TodoInput
+          inputValue={inputValue}
+          handleChange={handleChange}
+          buttonClick={buttonClick}
+        />
+
+        <TodoList
+          items={items}
+          tickItem={tickItem}
+          editIndex={editIndex}
+          editValue={editValue}
+          handleEditChange={handleEditChange}
+          startEdit={startEdit}
+          updateItem={updateItem}
+          del={del}
+          Tick={Tick}
+          undo={undo}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
