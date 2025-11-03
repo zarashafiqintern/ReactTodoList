@@ -1,87 +1,69 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import TodoInput from "./components/TodoInput";
-import TodoList from "./components/TodoList";
-import { SAVE_COMPLETED_DATA, SAVE_DATA } from "./Const";
+import Active from "./components/Active";
+import Completed from "./components/Completed";
+import { SAVE_DATA } from "./Const";
 import "./App.css";
 
 function App() {
-  const [tickItem, setTickItem] = useState(() => {
+  const [todos, setTodos] = useState(() => {
     try {
-      const showData = localStorage.getItem(SAVE_COMPLETED_DATA);
-      if (!showData || showData === "undefined") return [];
-      return JSON.parse(showData);
-    } catch {
-      return [];
-    }
-  });
-
-  const [items, setItems] = useState(() => {
-    try {
-      const showData = localStorage.getItem(SAVE_DATA);
-      if (!showData || showData === "undefined") return [];
-      return JSON.parse(showData);
+      const data = localStorage.getItem(SAVE_DATA);
+      if (!data || data === "undefined") return [];
+      return JSON.parse(data);
     } catch {
       return [];
     }
   });
 
   useEffect(() => {
-    localStorage.setItem(SAVE_COMPLETED_DATA, JSON.stringify(tickItem));
-  }, [tickItem]);
+    localStorage.setItem(SAVE_DATA, JSON.stringify(todos));
+  }, [todos]);
 
-  useEffect(() => {
-    localStorage.setItem(SAVE_DATA, JSON.stringify(items));
-  }, [items]);
-
-  const [editIndex, setEditIndex] = useState(null);
-  const [editValue, setEditValue] = useState("");
-
-  const Tick = (item, index) => {
-    setTickItem([...tickItem, item]);
-    setItems(items.filter((_, i) => i !== index));
+  const handleAddTask = (newText) => {
+    setTodos([...todos, { id: uuidv4(), text: newText, completed: false }]);
   };
 
-  const startEdit = (item, index) => {
-    setEditIndex(index);
-    setEditValue(item);
+  const handleCompleteTask = (id) => {
+    const updated = todos.map((todo) =>
+      todo.id === id ? { ...todo, completed: true } : todo
+    );
+    setTodos(updated);
   };
 
-  const handleEditChange = (e) => setEditValue(e.target.value);
-
-  const updateItem = (index) => {
-    const updated = [...items];
-    updated[index] = editValue;
-    setItems(updated);
-    setEditIndex(null);
-    setEditValue("");
+  const handleUndoTask = (id) => {
+    const updated = todos.map((todo) =>
+      todo.id === id ? { ...todo, completed: false } : todo
+    );
+    setTodos(updated);
   };
 
-  const del = (item) => {
-    setItems(items.filter((element) => element !== item));
+  const handleUpdateTask = (id, newText) => {
+    const updated = todos.map((todo) =>
+      todo.id === id ? { ...todo, text: newText } : todo
+    );
+    setTodos(updated);
   };
 
-  const undo = (item, index) => {
-    setItems([...items, item]);
-    setTickItem(tickItem.filter((_, i) => i !== index));
+  const handleDeleteTask = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
     <div className="container">
-      <div className="input-section">
-        <TodoInput onAdd={(newItem) => setItems([...items, newItem])} />
+      <h2>Todo App</h2>
 
-        <TodoList
-          items={items}
-          tickItem={tickItem}
-          editIndex={editIndex}
-          editValue={editValue}
-          handleEditChange={handleEditChange}
-          startEdit={startEdit}
-          updateItem={updateItem}
-          del={del}
-          Tick={Tick}
-          undo={undo}
+      <TodoInput onAdd={handleAddTask} />
+
+      <div className="tasks-wrapper">
+        <Active
+          todos={todos}
+          handleCompleteTask={handleCompleteTask}
+          handleUpdateTask={handleUpdateTask}
+          handleDeleteTask={handleDeleteTask}
         />
+        <Completed todos={todos} handleUndoTask={handleUndoTask} />
       </div>
     </div>
   );

@@ -1,0 +1,54 @@
+.completed-tasks {
+  flex: 1;
+  background: linear-gradient(135deg, #ffffff, #f5f7fa);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-left: 10px;
+}
+
+.completed-tasks h3 {
+  text-align: center;
+  color: #2d3436;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.completed-tasks .todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #edf7ed;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  transition: all 0.25s ease;
+}
+
+.completed-tasks .todo-item:hover {
+  background-color: #dff0df;
+  transform: translateY(-2px);
+}
+
+.completed-tasks span {
+  color: #2e7d32;
+  font-weight: 500;
+  text-decoration: line-through;
+  letter-spacing: 0.2px;
+}
+
+.completed-tasks button {
+  background-color: #ff7675;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.completed-tasks button:hover {
+  background-color: #e74c3c;
+  transform: scale(1.05);
+}
