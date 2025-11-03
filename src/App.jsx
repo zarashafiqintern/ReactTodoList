@@ -33,18 +33,8 @@ function App() {
     localStorage.setItem(SAVE_DATA, JSON.stringify(items));
   }, [items]);
 
-  const [inputValue, setInputValue] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
-
-  const handleChange = (e) => setInputValue(e.target.value);
-
-  const buttonClick = () => {
-    if (inputValue.trim() !== "") {
-      setItems([...items, inputValue]);
-      setInputValue("");
-    }
-  };
 
   const Tick = (item, index) => {
     setTickItem([...tickItem, item]);
@@ -78,11 +68,7 @@ function App() {
   return (
     <div className="container">
       <div className="input-section">
-        <TodoInput
-          inputValue={inputValue}
-          handleChange={handleChange}
-          buttonClick={buttonClick}
-        />
+        <TodoInput onAdd={(newItem) => setItems([...items, newItem])} />
 
         <TodoList
           items={items}
