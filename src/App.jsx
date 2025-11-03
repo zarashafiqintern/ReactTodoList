@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
+import { SAVE_COMPLETED_DATA, SAVE_DATA } from "./Const";
 import "./App.css";
 
 function App() {
- 
-  const saveCompletedData = "todoCompletedData";
-  const saveData = "todoData";
-
   const [tickItem, setTickItem] = useState(() => {
     try {
-      const showData = localStorage.getItem(saveCompletedData);
+      const showData = localStorage.getItem(SAVE_COMPLETED_DATA);
       if (!showData || showData === "undefined") return [];
       return JSON.parse(showData);
     } catch {
@@ -20,7 +17,7 @@ function App() {
 
   const [items, setItems] = useState(() => {
     try {
-      const showData = localStorage.getItem(saveData);
+      const showData = localStorage.getItem(SAVE_DATA);
       if (!showData || showData === "undefined") return [];
       return JSON.parse(showData);
     } catch {
@@ -29,11 +26,11 @@ function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem(saveCompletedData, JSON.stringify(tickItem));
+    localStorage.setItem(SAVE_COMPLETED_DATA, JSON.stringify(tickItem));
   }, [tickItem]);
 
   useEffect(() => {
-    localStorage.setItem(saveData, JSON.stringify(items));
+    localStorage.setItem(SAVE_DATA, JSON.stringify(items));
   }, [items]);
 
   const [inputValue, setInputValue] = useState("");

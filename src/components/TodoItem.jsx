@@ -23,7 +23,6 @@ const TodoItem = ({
         {item}
         <BiUndo
           onClick={() => undo(item, index)}
-          style={{ cursor: "pointer", marginLeft: "10rem" }}
         />
       </p>
     );
@@ -38,11 +37,9 @@ const TodoItem = ({
             type="text"
             value={editValue}
             onChange={handleEditChange}
-            style={{ marginLeft: "0.5rem" }}
           />
           <button
             onClick={() => updateItem(index)}
-            style={{ marginLeft: "0.5rem" }}
           >
             Update
           </button>
@@ -52,11 +49,9 @@ const TodoItem = ({
           {item}
           <CiEdit
             onClick={() => startEdit(item, index)}
-            style={{ cursor: "pointer", marginLeft: "0.5rem" }}
           />
           <MdDelete
             onClick={() => del(item)}
-            style={{ cursor: "pointer", marginLeft: "0.5rem" }}
           />
         </>
       )}
