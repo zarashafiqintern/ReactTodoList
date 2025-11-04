@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import useLocalStorage from "./hooks/UseLocalStorage";
 import { SAVE_DATA } from "./Const";
 import { v4 as uuidv4 } from "uuid";
@@ -41,8 +42,20 @@ function App() {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  const activeTodos = todos.filter((todo) => !todo.completed);
-  const completedTodos = todos.filter((todo) => todo.completed);
+  const { activeTodos, completedTodos } = useMemo(() => {
+    const active = [];
+    const completed = [];
+
+    for (const todo of todos) {
+      if (todo.completed) {
+        completed.push(todo);
+      } else {
+        active.push(todo);
+      }
+    }
+
+    return { activeTodos: active, completedTodos: completed };
+  }, [todos]);
 
   return (
     <div className="container">
