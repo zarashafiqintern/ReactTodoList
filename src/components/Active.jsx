@@ -16,21 +16,19 @@ const Active = ({ todos, handleCompleteTask, handleUpdateTask, handleDeleteTask 
     <div className="active-tasks">
       <h3>Active Tasks</h3>
 
-      {todos
-        .filter((todo) => !todo.completed)
-        .map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            isEditing={editTask.id === todo.id}
-            editValue={editTask.value}
-            onCheckboxChange={handleCompleteTask}
-            onEditClick={startEdit}
-            onDeleteClick={handleDeleteTask}
-            onInputChange={handleChange}
-            onSaveClick={saveUpdate}
-          />
-        ))}
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          isEditing={editTask.id === todo.id}
+          editValue={editTask.value}
+          onCheckboxChange={handleCompleteTask}
+          onEditClick={startEdit}
+          onDeleteClick={handleDeleteTask}
+          onInputChange={handleChange}
+          onSaveClick={saveUpdate}
+        />
+      ))}
     </div>
   );
 };
