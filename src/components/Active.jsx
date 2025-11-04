@@ -1,17 +1,12 @@
 import React, { useState } from "react";
+import TodoItem from "./TodoItem"; 
 import "./Active.css";
 
 const Active = ({ todos, handleCompleteTask, handleUpdateTask, handleDeleteTask }) => {
   const [editTask, setEditTask] = useState({ id: null, value: "" });
 
-  const startEdit = (id, text) => {
-    setEditTask({ id, value: text });
-  };
-
-  const handleChange = (e) => {
-    setEditTask({ ...editTask, value: e.target.value });
-  };
-
+  const startEdit = (id, text) => setEditTask({ id, value: text });
+  const handleChange = (e) => setEditTask({ ...editTask, value: e.target.value });
   const saveUpdate = (id) => {
     handleUpdateTask(id, editTask.value);
     setEditTask({ id: null, value: "" });
@@ -24,29 +19,17 @@ const Active = ({ todos, handleCompleteTask, handleUpdateTask, handleDeleteTask 
       {todos
         .filter((todo) => !todo.completed)
         .map((todo) => (
-          <div key={todo.id} className="todo-item">
-            <input
-              type="checkbox"
-              onChange={() => handleCompleteTask(todo.id)}
-            />
-
-            {editTask.id === todo.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editTask.value}
-                  onChange={handleChange}
-                />
-                <button onClick={() => saveUpdate(todo.id)}>Update</button>
-              </>
-            ) : (
-              <>
-                <span>{todo.text}</span>
-                <button onClick={() => startEdit(todo.id, todo.text)}>Edit</button>
-                <button onClick={() => handleDeleteTask(todo.id)}>Delete</button>
-              </>
-            )}
-          </div>
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            isEditing={editTask.id === todo.id}
+            editValue={editTask.value}
+            onCheckboxChange={handleCompleteTask}
+            onEditClick={startEdit}
+            onDeleteClick={handleDeleteTask}
+            onInputChange={handleChange}
+            onSaveClick={saveUpdate}
+          />
         ))}
     </div>
   );
