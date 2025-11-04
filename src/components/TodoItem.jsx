@@ -1,66 +1,40 @@
-import React from "react";
-import { MdDelete } from "react-icons/md";
-import { TiTick } from "react-icons/ti";
-import { CiEdit } from "react-icons/ci";
-import { BiUndo } from "react-icons/bi";
+import React, { useState } from "react";
 
-const TodoItem = ({
-  item,
-  index,
-  editIndex,
-  editValue,
-  handleEditChange,
-  startEdit,
-  updateItem,
-  del,
-  Tick,
-  undo,
-  completed = false,
-}) => {
-  if (completed) {
-    return (
-      <p>
-        {item}
-        <BiUndo
-          onClick={() => undo(item, index)}
-          style={{ cursor: "pointer", marginLeft: "10rem" }}
-        />
-      </p>
-    );
-  }
+const TodoItem = ({ todo, onCheckboxChange, onDeleteClick, onSaveClick }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(todo.text);
+
+  const handleSave = () => {
+    if (editValue.trim() === "") return;
+    onSaveClick(todo.id, editValue);
+    setIsEditing(false);
+  };
 
   return (
-    <p>
-      <TiTick onClick={() => Tick(item, index)} style={{ cursor: "pointer" }} />
-      {editIndex === index ? (
+    <div className="todo-item">
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => onCheckboxChange(todo.id)}
+      />
+
+      {isEditing ? (
         <>
           <input
             type="text"
             value={editValue}
-            onChange={handleEditChange}
-            style={{ marginLeft: "0.5rem" }}
+            onChange={(e) => setEditValue(e.target.value)}
           />
-          <button
-            onClick={() => updateItem(index)}
-            style={{ marginLeft: "0.5rem" }}
-          >
-            Update
-          </button>
+          <button onClick={handleSave}>Update</button>
         </>
       ) : (
         <>
-          {item}
-          <CiEdit
-            onClick={() => startEdit(item, index)}
-            style={{ cursor: "pointer", marginLeft: "0.5rem" }}
-          />
-          <MdDelete
-            onClick={() => del(item)}
-            style={{ cursor: "pointer", marginLeft: "0.5rem" }}
-          />
+          <span>{todo.text}</span>
+          <button onClick={() => setIsEditing(true)}>Edit</button>
+          <button onClick={() => onDeleteClick(todo.id)}>Delete</button>
         </>
       )}
-    </p>
+    </div>
   );
 };
 

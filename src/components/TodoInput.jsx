@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
+import "./TodoInput.css";
+const TodoInput = ({ onAdd }) => {
+  const [inputValue, setInputValue] = useState("");
 
-const TodoInput = ({ inputValue, handleChange, buttonClick }) => {
+  const handleChange = (e) => setInputValue(e.target.value);
+
+  const handleClick = () => {
+    if (inputValue.trim() !== "") {
+      onAdd(inputValue); 
+      setInputValue("");
+    }
+  };
+
   return (
     <div className="input-row">
       <input
@@ -9,7 +20,7 @@ const TodoInput = ({ inputValue, handleChange, buttonClick }) => {
         value={inputValue}
         placeholder="Enter a task..."
       />
-      <button onClick={buttonClick}>Add</button>
+      <button onClick={handleClick}>Add</button>
     </div>
   );
 };

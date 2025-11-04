@@ -1,104 +1,75 @@
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
+import useLocalStorage from "./hooks/UseLocalStorage";
+import { SAVE_DATA } from "./Const";
+import { v4 as uuidv4 } from "uuid";
 import TodoInput from "./components/TodoInput";
-import TodoList from "./components/TodoList";
+import Active from "./components/Active";
+import Completed from "./components/Completed";
 import "./App.css";
 
 function App() {
- 
-  const saveCompletedData = "todoCompletedData";
-  const saveData = "todoData";
+  const [todos, setTodos] = useLocalStorage(SAVE_DATA, []);
 
-  const [tickItem, setTickItem] = useState(() => {
-    try {
-      const showData = localStorage.getItem(saveCompletedData);
-      if (!showData || showData === "undefined") return [];
-      return JSON.parse(showData);
-    } catch {
-      return [];
+  const handleAddTask = (newText) => {
+    setTodos([...todos, { id: uuidv4(), text: newText, completed: false }]);
+  };
+
+  const handleCompleteTask = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: true } : todo
+      )
+    );
+  };
+
+  const handleUndoTask = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: false } : todo
+      )
+    );
+  };
+
+  const handleUpdateTask = (id, newText) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, text: newText } : todo
+      )
+    );
+  };
+
+  const handleDeleteTask = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
+  const { activeTodos, completedTodos } = useMemo(() => {
+    const active = [];
+    const completed = [];
+
+    for (const todo of todos) {
+      if (todo.completed) {
+        completed.push(todo);
+      } else {
+        active.push(todo);
+      }
     }
-  });
 
-  const [items, setItems] = useState(() => {
-    try {
-      const showData = localStorage.getItem(saveData);
-      if (!showData || showData === "undefined") return [];
-      return JSON.parse(showData);
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(saveCompletedData, JSON.stringify(tickItem));
-  }, [tickItem]);
-
-  useEffect(() => {
-    localStorage.setItem(saveData, JSON.stringify(items));
-  }, [items]);
-
-  const [inputValue, setInputValue] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
-  const [editValue, setEditValue] = useState("");
-
-  const handleChange = (e) => setInputValue(e.target.value);
-
-  const buttonClick = () => {
-    if (inputValue.trim() !== "") {
-      setItems([...items, inputValue]);
-      setInputValue("");
-    }
-  };
-
-  const Tick = (item, index) => {
-    setTickItem([...tickItem, item]);
-    setItems(items.filter((_, i) => i !== index));
-  };
-
-  const startEdit = (item, index) => {
-    setEditIndex(index);
-    setEditValue(item);
-  };
-
-  const handleEditChange = (e) => setEditValue(e.target.value);
-
-  const updateItem = (index) => {
-    const updated = [...items];
-    updated[index] = editValue;
-    setItems(updated);
-    setEditIndex(null);
-    setEditValue("");
-  };
-
-  const del = (item) => {
-    setItems(items.filter((element) => element !== item));
-  };
-
-  const undo = (item, index) => {
-    setItems([...items, item]);
-    setTickItem(tickItem.filter((_, i) => i !== index));
-  };
+    return { activeTodos: active, completedTodos: completed };
+  }, [todos]);
 
   return (
     <div className="container">
-      <div className="input-section">
-        <TodoInput
-          inputValue={inputValue}
-          handleChange={handleChange}
-          buttonClick={buttonClick}
-        />
+      <h2>Todo App</h2>
+      <TodoInput onAdd={handleAddTask} />
 
-        <TodoList
-          items={items}
-          tickItem={tickItem}
-          editIndex={editIndex}
-          editValue={editValue}
-          handleEditChange={handleEditChange}
-          startEdit={startEdit}
-          updateItem={updateItem}
-          del={del}
-          Tick={Tick}
-          undo={undo}
+      <div className="tasks-wrapper">
+        <Active
+          todos={activeTodos}
+          handleCompleteTask={handleCompleteTask}
+          handleUpdateTask={handleUpdateTask}
+          handleDeleteTask={handleDeleteTask}
         />
+        <Completed todos={completedTodos} handleUndoTask={handleUndoTask} />
       </div>
     </div>
   );
