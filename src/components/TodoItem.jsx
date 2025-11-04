@@ -1,21 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 
-const TodoItem = ({
-  todo,
-  isEditing,
-  editValue,
-  onCheckboxChange,
-  onEditClick,
-  onDeleteClick,
-  onInputChange,
-  onSaveClick,
-}) => {
+const TodoItem = ({ todo, onCheckboxChange, onDeleteClick, onSaveClick }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(todo.text);
+
+  const handleSave = () => {
+    if (editValue.trim() === "") return;
+    onSaveClick(todo.id, editValue);
+    setIsEditing(false);
+  };
+
   return (
     <div className="todo-item">
       <input
         type="checkbox"
+        checked={todo.completed}
         onChange={() => onCheckboxChange(todo.id)}
-        checked={todo.completed || false}
       />
 
       {isEditing ? (
@@ -23,14 +23,14 @@ const TodoItem = ({
           <input
             type="text"
             value={editValue}
-            onChange={onInputChange}
+            onChange={(e) => setEditValue(e.target.value)}
           />
-          <button onClick={() => onSaveClick(todo.id)}>Update</button>
+          <button onClick={handleSave}>Update</button>
         </>
       ) : (
         <>
           <span>{todo.text}</span>
-          <button onClick={() => onEditClick(todo.id, todo.text)}>Edit</button>
+          <button onClick={() => setIsEditing(true)}>Edit</button>
           <button onClick={() => onDeleteClick(todo.id)}>Delete</button>
         </>
       )}
